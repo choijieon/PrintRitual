@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Ritual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals (Light Mode), Deep Charcoal & Soft Greys (Dark Mode) -->
+    <!-- Application Structure Plan: A narrative, single-page scroll experience designed to feel like a story unfolding. It starts with the emotional 'Hook' as a hero section. It then moves into five distinct, interactive sections: 1) Gen Z & Digital Wellbeing, 2) The Problem (Digital Overload), 3) The Solution (The Paper), 4) The Experience (Meet Joe), and 5) The Vision (Why Now & The Future). This structure guides the user from the relatable pain point to the innovative solution and its potential, using interactive cards and toggles to make discovery engaging and self-paced, which is more user-friendly than a static slide-by-slide presentation. -->
+    <!-- Visualization & Content Choices: The application uses structured HTML/CSS to create diagrammatic representations and interactive elements. For "Gen Z & Digital Wellbeing," simple HTML/CSS bars illustrate screen time trends (Goal: Inform, Method: Styled HTML bars, Interaction: Static visual). For "The Problem," cards now display full content from the start, removing the click interaction (Goal: Inform, Method: Styled HTML cards, Interaction: None). For "The Solution," a toggle switch compares Digital Chaos vs. Print Ritual (Goal: Compare, Method: Interactive HTML toggle, Interaction: Click to switch views). For "The Experience," a feature list is presented as an old-fashioned newspaper clipping (Goal: Organize/Inform, Method: Styled HTML). For "The Vision," a simple but impactful numeric stat is used for the resurgence of physical media (Goal: Inform, Method: Dynamic Stat). This avoids charts for a more conceptual, narrative-driven presentation appropriate for the source material. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        h1, h2, h3 {
+            font-family: 'Lora', serif;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #A58D78;
+            border-bottom-color: #A58D78;
+        }
+        .newspaper-card {
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+        }
+        .newspaper-card:hover {
+            transform: translateY(-5px);
+        }
+        .tab-button.active {
+            background-color: #A58D78;
+            color: #FDFDFB;
+        }
+        .toggle-bg {
+            transition: background-color 0.3s;
+        }
+        .toggle-bg:after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 9999px;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        input:checked + .toggle-bg:after {
+            transform: translateX(24px);
+        }
+        input:checked + .toggle-bg {
+            background-color: #A58D78;
+        }
+        .section {
+            scroll-margin-top: 80px;
+        }
+
+        /* Light Mode Defaults */
+        body {
+            background-color: #FDFDFB;
+            color: #333;
+        }
+        header {
+            background-color: #FDFDFB;
+        }
+        .newspaper-card {
+            background-color: #F5F1ED;
+            border: 1px solid #EAE3DC;
+            box-shadow: 3px 3px 8px rgba(0,0,0,0.05);
+        }
+        .newspaper-card:hover {
+            box-shadow: 5px 5px 12px rgba(0,0,0,0.08);
+        }
+        #solution {
+            background-color: #F5F1ED;
+        }
+        footer {
+            background-color: #F5F1ED;
+        }
+        .trend-bar-bg {
+            background-color: #EAE3DC;
+        }
+        .trend-bar-fill {
+            background-color: #A58D78;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #1A1A1A;
+            color: #E0E0E0;
+        }
+        body.dark-mode header {
+            background-color: #1A1A1A;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .nav-link {
+            color: #E0E0E0;
+        }
+        body.dark-mode .nav-link:hover, body.dark-mode .nav-link.active {
+            color: #A58D78;
+            border-bottom-color: #A58D78;
+        }
+        body.dark-mode .text-gray-600 {
+            color: #B0B0B0;
+        }
+        body.dark-mode .newspaper-card {
+            background-color: #282828;
+            border-color: #3A3A3A;
+            box-shadow: 3px 3px 8px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .newspaper-card:hover {
+            box-shadow: 5px 5px 12px rgba(0,0,0,0.4);
+        }
+        body.dark-mode #solution {
+            background-color: #222222;
+        }
+        body.dark-mode .border-red-400 {
+            border-color: #E07070;
+        }
+        body.dark-mode .border-green-400 {
+            border-color: #70E070;
+        }
+        body.dark-mode .text-gray-700 {
+            color: #C0C0C0;
+        }
+        body.dark-mode .border-b-gray-300 {
+            border-color: #555;
+        }
+        body.dark-mode .text-gray-400 {
+            color: #909090;
+        }
+        body.dark-mode footer {
+            background-color: #222222;
+            color: #B0B0B0;
+        }
+        body.dark-mode .toggle-bg:after {
+            background-color: #333; /* Darker knob in dark mode */
+        }
+        body.dark-mode .trend-bar-bg {
+            background-color: #3A3A3A;
+        }
+        body.dark-mode .trend-bar-fill {
+            background-color: #A58D78;
+        }
+    </style>
+</head>
+<body class="bg-[#FDFDFB]">
+
+    <header class="bg-[#FDFDFB] sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-semibold text-[#A58D78]" data-key="appName">Print Ritual</h1>
+            <div class="flex items-center space-x-8">
+                <div class="flex items-center space-x-2">
+                    <span id="langEn" class="font-bold text-lg text-[#A58D78]">EN</span>
+                    <label for="langToggle" class="flex items-center cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" id="langToggle" class="sr-only">
+                            <div class="toggle-bg block bg-gray-300 w-12 h-6 rounded-full"></div>
+                        </div>
+                    </label>
+                    <span id="langKo" class="font-bold text-lg text-gray-400">KO</span>
+                </div>
+                <div class="flex items-center space-x-2 ml-4">
+                    <span id="modeLight" class="font-bold text-lg text-[#A58D78]">☀️</span>
+                    <label for="darkModeToggle" class="flex items-center cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" id="darkModeToggle" class="sr-only">
+                            <div class="toggle-bg block bg-gray-300 w-12 h-6 rounded-full"></div>
+                        </div>
+                    </label>
+                    <span id="modeDark" class="font-bold text-lg text-gray-400">🌙</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#genz" class="nav-link" data-key="navGenZ">Gen Z & Wellbeing</a>
+                    <a href="#problem" class="nav-link" data-key="navProblem">The Problem</a>
+                    <a href="#solution" class="nav-link" data-link="navSolution">The Solution</a>
+                    <a href="#experience" class="nav-link" data-key="navExperience">The Experience</a>
+                    <a href="#vision" class="nav-link" data-key="navVision">The Vision</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6">
+        <section class="text-center py-20 md:py-32">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4" data-key="mainTagline">The Daily Ritual of Real Connection.</h1>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto" data-key="subTagline">Get Your Paper. Get Your People.</p>
+        </section>
+
+        <section id="morning-ritual" class="section py-16 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6" data-key="ritualTitle">Breaking the Digital Dawn Cycle.</h2>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-4" data-key="ritualText1">Imagine waking up and reaching for a fresh, personalized newspaper instead of your phone. We're here to break the cycle of immediate digital overload.</p>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto" data-key="ritualText2">It's an information diet: you wouldn't eat junk food the moment you wake up. Why consume digital junk? Start your day with meaningful, curated content that truly connects you.</p>
+        </section>
+
+        <section id="genz" class="section py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold" data-key="genzTitle">Gen Z and the Digital Wellbeing Movement.</h2>
+                <p class="text-lg text-gray-600 mt-2 max-w-2xl mx-auto" data-key="genzIntro">A generation raised online is now seeking balance. They're fatigued by constant digital noise and the pressure of social media. This section explores their journey towards a healthier relationship with technology.</p>
+            </div>
+            <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4" data-key="fatigueTitle">Fatigue from the Feed.</h3>
+                    <p class="text-gray-600 mb-4" data-key="fatigueText">Endless scrolling and curated feeds often leave Gen Z feeling drained, anxious, and disconnected from genuine experiences. The constant influx of information can be overwhelming, leading to a desire for digital detox.</p>
+                    <h3 class="text-2xl font-semibold mb-4" data-key="trendsTitle">Trends Towards Less Screen Time.</h3>
+                    <p class="text-gray-600 mb-4" data-key="trendsText">There's a growing movement towards intentional screen reduction. From the resurgence of 'dumb phones' to the rise of digital wellbeing apps and mindful tech communities, people are actively seeking ways to reclaim their attention and time.</p>
+                </div>
+                <div class="space-y-6">
+                    <div class="flex items-center">
+                        <span class="text-xl mr-4" data-key="trend1Icon">📱</span>
+                        <div>
+                            <p class="font-semibold" data-key="trend1Text">Digital Detox Apps</p>
+                            <div class="w-full h-4 rounded-full trend-bar-bg">
+                                <div class="h-full rounded-full trend-bar-fill" style="width: 70%;"></div>
+                            </div>
+                            <p class="text-sm text-gray-500" data-key="trend1Stat">70% of users report reduced screen time.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="text-xl mr-4" data-key="trend2Icon">📵</span>
+                        <div>
+                            <p class="font-semibold" data-key="trend2Text">Rise of 'Dumb Phones'</p>
+                            <div class="w-full h-4 rounded-full trend-bar-bg">
+                                <div class="h-full rounded-full trend-bar-fill" style="width: 45%;"></div>
+                            </div>
+                            <p class="text-sm text-gray-500" data-key="trend2Stat">45% increase in sales year-over-year.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="text-xl mr-4" data-key="trend3Icon">🧘</span>
+                        <div>
+                            <p class="font-semibold" data-key="trend3Text">Mindful Tech Communities</p>
+                            <div class="w-full h-4 rounded-full trend-bar-bg">
+                                <div class="h-full rounded-full trend-bar-fill" style="width: 60%;"></div>
+                            </div>
+                            <p class="text-sm text-gray-500" data-key="trend3Stat">60% growth in membership.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="problem" class="section py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold" data-key="problemTitle">Digital Noise, No Meaning.</h2>
+                <p class="text-lg text-gray-600 mt-2 max-w-2xl mx-auto" data-key="problemIntro">We've identified a core tension in our digital lives. Here are the key challenges we address:</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div id="problemCard1" class="newspaper-card p-6 rounded-lg text-center">
+                    <h3 class="text-2xl font-semibold mb-2" data-key="card1Title">Endless Scrolling</h3>
+                    <p id="problemText1" class="text-gray-600" data-key="card1Text">Gen Z is overwhelmed by endless, hollow feeds that are designed for addiction, not fulfillment.</p>
+                </div>
+                <div id="problemCard2" class="newspaper-card p-6 rounded-lg text-center">
+                    <h3 class="text-2xl font-semibold mb-2" data-key="card2Title">Shallow Connection</h3>
+                    <p id="problemText2" class="text-gray-600" data-key="card2Text">Social media often feels more like performing for surveillance than building genuine connections.</p>
+                </div>
+                <div id="problemCard3" class="newspaper-card p-6 rounded-lg text-center">
+                    <h3 class="text-2xl font-semibold mb-2" data-key="card3Title">Group Chat Gold: Moments That Matter</h3>
+                    <p id="problemText3" class="text-gray-600" data-key="card3Text">Group chats are where the real fun happens: inside jokes, spontaneous updates, shared laughter. But these golden moments are fleeting. Our service helps capture and elevate them into memorable, entertaining features, so the fun lives on beyond the scroll.</p>
+                </div>
+            </div>
+            <p class="text-center text-2xl font-semibold mt-12 text-[#A58D78]" data-key="problemConclusion">Everyone wants to unplug—but not disconnect.</p>
+        </section>
+
+        <section id="solution" class="section py-16 bg-[#F5F1ED] -mx-6 px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold" data-key="solutionTitle">A Daily Ritual, Reimagined.</h2>
+                <p class="text-lg text-gray-600 mt-2 max-w-3xl mx-auto" data-key="solutionIntro">Our solution bridges the gap between digital life and tangible connection. It's a personalized, AI-curated daily print newspaper, written just for you and your group. Use the toggle to see how we transform the digital experience.</p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="flex items-center justify-center space-x-4 mb-8">
+                    <span id="digitalLabel" class="font-bold text-lg text-[#A58D78]" data-key="digitalLabel">Digital Chaos</span>
+                    <label for="experienceToggle" class="flex items-center cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" id="experienceToggle" class="sr-only">
+                            <div class="toggle-bg block bg-gray-300 w-12 h-6 rounded-full"></div>
+                        </div>
+                    </label>
+                    <span id="printLabel" class="font-bold text-lg text-gray-400" data-key="printLabel">Print Ritual</span>
+                </div>
+                
+                <div id="digitalView" class="grid md:grid-cols-2 gap-8">
+                    <div class="border-l-4 border-red-400 pl-4">
+                        <h3 class="font-bold text-xl" data-key="digital1Title">Lost Moments</h3>
+                        <p data-key="digital1Text">Important updates and funny memories disappear in an endless scroll.</p>
+                    </div>
+                    <div class="border-l-4 border-red-400 pl-4">
+                        <h3 class="font-bold text-xl" data-key="digital2Title">Spammy Ads</h3>
+                        <p data-key="digital2Text">Intrusive ads disrupt conversations and feel like invasive spam.</p>
+                    </div>
+                    <div class="border-l-4 border-red-400 pl-4">
+                        <h3 class="font-bold text-xl" data-key="digital3Title">Passive Consumption</h3>
+                        <p data-key="digital3Text">Mindless scrolling leads to digital fatigue and a sense of emptiness.</p>
+                    </div>
+                    <div class="border-l-4 border-red-400 pl-4">
+                        <h3 class="font-bold text-xl" data-key="digital4Title">Fleeting Content</h3>
+                        <p data-key="digital4Text">Memes and messages are seen once and then forgotten forever.</p>
+                    </div>
+                </div>
+                
+                <div id="printView" class="hidden grid md:grid-cols-2 gap-8">
+                     <div class="border-l-4 border-green-400 pl-4">
+                        <h3 class="font-bold text-xl" data-key="print1Title">Printed Columns</h3>
+                        <p data-key="print1Text">Group chat gossip, life updates, and memes are turned into memorable features.</p>
+                    </div>
+                     <div class="border-l-4 border-green-400 pl-4">
+                        <h3 class="font-bold text-xl" data-key="print2Title">Intentional Offers</h3>
+                        <p data-key="print2Text">Coupons feel like gifts, not spam, when printed next to stories you care about.</p>
+                    </div>
+                     <div class="border-l-4 border-green-400 pl-4">
+                        <h3 class="font-bold text-xl" data-key="print3Title">Shared Experience</h3>
+                        <p data-key="print3Text">Everyone in the group gets the same issue, creating a shared daily ritual.</p>
+                    </div>
+                     <div class="border-l-4 border-green-400 pl-4">
+                        <h3 class="font-bold text-xl" data-key="print4Title">Physical Keepsakes</h3>
+                        <p data-key="print4Text">People keep physical things: pin them, share them, remember them.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="experience" class="section py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold" data-key="experienceTitle">Meet Joe, Your Editor in Chief.</h2>
+                <p class="text-lg text-gray-600 mt-2 max-w-3xl mx-auto" data-key="experienceIntro">The magic behind your paper is Joseph T. Stain—your sarcastic, observant, slightly nosy AI editor. He turns your group's chaos into journalistic charm.</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto md:flex gap-8 items-center">
+                <div class="md:w-1/2 mb-8 md:mb-0">
+                    <h3 class="text-2xl font-bold mb-4" data-key="howJoeWorksTitle">How Joe Works</h3>
+                    <p class="mb-4" data-key="howJoeWorksText">You can DM Joe to vent, request stories, or submit gossip. Add him to your group chat, and he'll quietly observe, finding the gems in your daily interactions. He's the ghostwriter for your group's unwritten history.</p>
+                    <div class="bg-[#A58D78] text-white p-4 italic rounded-lg" data-key="joeQuote">"It's like if your group chat had a Pulitzer-winning ghostwriter."</div>
+                </div>
+                <div class="md:w-1/2">
+                    <div class="newspaper-card rounded-lg p-6 border-t-8 border-t-[#A58D78]">
+                        <h3 class="text-xl font-bold text-center font-serif border-b-2 border-b-gray-300 pb-2 mb-4" data-key="sampleColumnsTitle">Sample Columns</h3>
+                        <ul class="space-y-2 text-gray-700">
+                            <li data-key="column1">- "From the Editor's Desk" (Joe's take on your week)</li>
+                            <li data-key="column2">- "Weekend Review" (A summary of your group's adventures)</li>
+                            <li data-key="column3">- "Friend Horoscope" (Predictions based on group dynamics)</li>
+                            <li data-key="column4">- "Classifieds: Lost, Found & Missed Connections"</li>
+                            <li data-key="column5">- "What You Should Have Said" (Retorts for past debates)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="vision" class="section py-16 bg-[#333] text-white -mx-6 px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold" data-key="visionTitle">Why Now? The Return to Tangible.</h2>
+                <p class="text-lg text-gray-300 mt-2 max-w-3xl mx-auto" data-key="visionIntro">We're at a cultural turning point. The digital pendulum is swinging back towards meaningful, physical experiences. This is not about news. It's about presence.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 text-center max-w-5xl mx-auto mb-16">
+                <div class="p-6">
+                    <div class="text-5xl font-bold text-[#A58D78] mb-2" id="vinylStat">75%</div>
+                    <h3 class="text-xl font-semibold" data-key="vinylTitle">Vinyl is Back</h3>
+                    <p class="text-gray-400" data-key="vinylText">Vinyl sales have seen double-digit growth for over a decade, proving a desire for physical media.</p>
+                </div>
+                <div class="p-6">
+                    <div class="text-5xl font-bold text-[#A58D78] mb-2" id="bookStat">82%</div>
+                    <h3 class="text-xl font-semibold" data-key="bookTitle">Books Never Left</h3>
+                    <p class="text-gray-400" data-key="bookText">The vast majority of readers still prefer physical books over e-books.</p>
+                </div>
+                <div class="p-6">
+                    <div class="text-5xl font-bold text-[#A58D78] mb-2" id="paperStat">1st</div>
+                    <h3 class="text-xl font-semibold" data-key="paperTitle">Newspapers are Next</h3>
+                    <p class="text-gray-400" data-key="paperText">We are pioneering the return of the newspaper—not as mass media, but as personal media.</p>
+                </div>
+            </div>
+
+            <div class="max-w-4xl mx-auto text-center">
+                <h3 class="text-3xl font-bold mb-6" data-key="communityTitle">The Rise of Real-World Connections.</h3>
+                <p class="text-lg text-gray-300 mb-4" data-key="communityText1">While digital fatigue grows, new technologies are ironically enabling a return to more traditional, physical forms of connection. This societal shift towards authentic community and physical interaction is palpable.</p>
+                <div class="grid md:grid-cols-2 gap-8 mt-8">
+                    <div class="p-6 border border-gray-600 rounded-lg">
+                        <h4 class="text-2xl font-semibold mb-2" data-key="datingAppsTitle">Dating Apps Decline</h4>
+                        <p class="text-gray-400" data-key="datingAppsText">Many users report burnout from endless swiping and superficial interactions, leading to a renewed interest in meeting people in person, often facilitated by new event-discovery platforms.</p>
+                    </div>
+                    <div class="p-6 border border-gray-600 rounded-lg">
+                        <h4 class="text-2xl font-semibold mb-2" data-key="thirdPlacesTitle">The Appeal of 'Third Places'</h4>
+                        <p class="text-gray-400" data-key="thirdPlacesText">Coffee shops, community centers, and local hubs are thriving as people seek environments for casual, genuine social interaction outside of home and work, often found through hyperlocal social apps.</p>
+                    </div>
+                </div>
+                <p class="text-lg text-gray-300 mt-8" data-key="communityText2">Print Ritual aligns perfectly with this desire for more tangible, shared experiences, fostering a sense of ritual and belonging within your closest circles, amplified by smart curation.</p>
+            </div>
+
+             <div class="text-center mt-16 space-y-4">
+                <p class="text-2xl font-serif italic" data-key="quote1">"Less doomscrolling. More page-turning."</p>
+                <p class="text-2xl font-serif italic" data-key="quote2">"Less screen. More story."</p>
+                <p class="text-2xl font-serif italic" data-key="quote3">"Less feed. More meaning."</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-center py-8 bg-[#F5F1ED]">
+        <p data-key="footerText">&copy; 2025 Print Ritual - Redefining the daily read.</p>
+    </footer>
+
+    <script>
+        const translations = {
+            en: {
+                appName: "Print Ritual",
+                navGenZ: "Gen Z & Wellbeing",
+                navProblem: "The Problem",
+                navSolution: "The Solution",
+                navExperience: "The Experience",
+                navVision: "The Vision",
+                mainTagline: "The Daily Ritual of Real Connection.",
+                subTagline: "Get Your Paper. Get Your People.",
+                ritualTitle: "Breaking the Digital Dawn Cycle.",
+                ritualText1: "Imagine waking up and reaching for a fresh, personalized newspaper instead of your phone. We're here to break the cycle of immediate digital overload.",
+                ritualText2: "It's an information diet: you wouldn't eat junk food the moment you wake up. Why consume digital junk? Start your day with meaningful, curated content that truly connects you.",
+                genzTitle: "Gen Z and the Digital Wellbeing Movement.",
+                genzIntro: "A generation raised online is now seeking balance. They're fatigued by constant digital noise and the pressure of social media. This section explores their journey towards a healthier relationship with technology.",
+                fatigueTitle: "Fatigue from the Feed.",
+                fatigueText: "Endless scrolling and curated feeds often leave Gen Z feeling drained, anxious, and disconnected from genuine experiences. The constant influx of information can be overwhelming, leading to a desire for digital detox.",
+                trendsTitle: "Trends Towards Less Screen Time.",
+                trendsText: "There's a growing movement towards intentional screen reduction. From the resurgence of 'dumb phones' to the rise of digital wellbeing apps and mindful tech communities, people are actively seeking ways to reclaim their attention and time.",
+                trend1Icon: "📱",
+                trend1Text: "Digital Detox Apps",
+                trend1Stat: "70% of users report reduced screen time.",
+                trend2Icon: "📵",
+                trend2Text: "Rise of 'Dumb Phones'",
+                trend2Stat: "45% increase in sales year-over-year.",
+                trend3Icon: "🧘",
+                trend3Text: "Mindful Tech Communities",
+                trend3Stat: "60% growth in membership.",
+                problemTitle: "Digital Noise, No Meaning.",
+                problemIntro: "We've identified a core tension in our digital lives. Here are the key challenges we address:",
+                card1Title: "Endless Scrolling",
+                card1Text: "Gen Z is overwhelmed by endless, hollow feeds that are designed for addiction, not fulfillment.",
+                card2Title: "Shallow Connection",
+                card2Text: "Social media often feels more like performing for surveillance than building genuine connections.",
+                card3Title: "Group Chat Gold: Moments That Matter",
+                card3Text: "Group chats are where the real fun happens: inside jokes, spontaneous updates, shared laughter. But these golden moments are fleeting. Our service helps capture and elevate them into memorable, entertaining features, so the fun lives on beyond the scroll.",
+                problemConclusion: "Everyone wants to unplug—but not not disconnect.",
+                solutionTitle: "A Daily Ritual, Reimagined.",
+                solutionIntro: "Our solution bridges the gap between digital life and tangible connection. It's a personalized, AI-curated daily print newspaper, written just for you and your group. Use the toggle to see how we transform the digital experience.",
+                digitalLabel: "Digital Chaos",
+                printLabel: "Print Ritual",
+                digital1Title: "Lost Moments",
+                digital1Text: "Important updates and funny memories disappear in an endless scroll.",
+                digital2Title: "Spammy Ads",
+                digital2Text: "Intrusive ads disrupt conversations and feel like invasive spam.",
+                digital3Title: "Passive Consumption",
+                digital3Text: "Mindless scrolling leads to digital fatigue and a sense of emptiness.",
+                digital4Title: "Fleeting Content",
+                digital4Text: "Memes and messages are seen once and then forgotten forever.",
+                print1Title: "Printed Columns",
+                print1Text: "Group chat gossip, life updates, and memes are turned into memorable features.",
+                print2Title: "Intentional Offers",
+                print2Text: "Coupons feel like gifts, not spam, when printed next to stories you care about.",
+                print3Title: "Shared Experience",
+                print3Text: "Everyone in the group gets the same issue, creating a shared daily ritual.",
+                print4Title: "Physical Keepsakes",
+                print4Text: "People keep physical things: pin them, share them, remember them.",
+                experienceTitle: "Meet Joe, Your Editor in Chief.",
+                experienceIntro: "The magic behind your paper is Joseph T. Stain—your sarcastic, observant, slightly nosy AI editor. He turns your group's chaos into journalistic charm.",
+                howJoeWorksTitle: "How Joe Works",
+                howJoeWorksText: "You can DM Joe to vent, request stories, or submit gossip. Add him to your group chat, and he'll quietly observe, finding the gems in your daily interactions. He's the ghostwriter for your group's unwritten history.",
+                joeQuote: "\"It's like if your group chat had a Pulitzer-winning ghostwriter.\"",
+                sampleColumnsTitle: "Sample Columns",
+                column1: "- \"From the Editor's Desk\" (Joe's take on your week)",
+                column2: "- \"Weekend Review\" (A summary of your group's adventures)",
+                column3: "- \"Friend Horoscope\" (Predictions based on group dynamics)",
+                column4: "- \"Classifieds: Lost, Found & Missed Connections\"",
+                column5: "- \"What You Should Have Said\" (Retorts for past debates)",
+                visionTitle: "Why Now? The Return to Tangible.",
+                visionIntro: "We're at a cultural turning point. The digital pendulum is swinging back towards meaningful, physical experiences. This is not about news. It's about presence.",
+                vinylTitle: "Vinyl is Back",
+                vinylText: "Vinyl sales have seen double-digit growth for over a decade, proving a desire for physical media.",
+                bookTitle: "Books Never Left",
+                bookText: "The vast majority of readers still prefer physical books over e-books.",
+                paperTitle: "Newspapers are Next",
+                paperText: "We are pioneering the return of the newspaper—not as mass media, but as personal media.",
+                communityTitle: "The Rise of Real-World Connections.",
+                communityText1: "While digital fatigue grows, new technologies are ironically enabling a return to more traditional, physical forms of connection. This societal shift towards authentic community and physical interaction is palpable.",
+                datingAppsTitle: "Dating Apps Decline",
+                datingAppsText: "Many users report burnout from endless swiping and superficial interactions, leading to a renewed interest in meeting people in person, often facilitated by new event-discovery platforms.",
+                thirdPlacesTitle: "The Appeal of 'Third Places'",
+                thirdPlacesText: "Coffee shops, community centers, and local hubs are thriving as people seek environments for casual, genuine social interaction outside of home and work, often found through hyperlocal social apps.",
+                communityText2: "Print Ritual aligns perfectly with this desire for more tangible, shared experiences, fostering a sense of ritual and belonging within your closest circles, amplified by smart curation.",
+                quote1: "\"Less doomscrolling. More page-turning.\"",
+                quote2: "\"Less screen. More story.\"",
+                quote3: "\"Less feed. More meaning.\"",
+                footerText: "&copy; 2025 Print Ritual - Redefining the daily read."
+            },
+            ko: {
+                appName: "인쇄 의식",
+                navGenZ: "Z세대 & 디지털 웰빙",
+                navProblem: "문제점",
+                navSolution: "해결책",
+                navExperience: "경험",
+                navVision: "비전",
+                mainTagline: "진정한 소통을 위한 매일의 의식.",
+                subTagline: "당신의 종이, 당신의 사람들.",
+                ritualTitle: "디지털 새벽 사이클 깨기.",
+                ritualText1: "잠에서 깨어나자마자 휴대폰 대신 신선하고 개인화된 신문을 집어 드는 것을 상상해 보세요. 우리는 즉각적인 디지털 과부하의 악순환을 끊기 위해 여기 있습니다.",
+                ritualText2: "이것은 정보 다이어트와 같습니다: 잠에서 깨어나자마자 정크 푸드를 먹지 않듯이, 왜 디지털 쓰레기를 소비해야 할까요? 진정으로 당신을 연결하는 의미 있고 큐레이션된 콘텐츠로 하루를 시작하세요.",
+                genzTitle: "Z세대와 디지털 웰빙 운동.",
+                genzIntro: "온라인에서 성장한 세대가 이제 균형을 찾고 있습니다. 끊임없는 디지털 소음과 소셜 미디어의 압박에 지쳐있죠. 이 섹션에서는 기술과의 더 건강한 관계를 향한 그들의 여정을 탐구합니다.",
+                fatigueTitle: "피로를 주는 피드.",
+                fatigueText: "끝없는 스크롤링과 큐레이션된 피드는 종종 Z세대를 지치고 불안하게 만들며, 진정한 경험으로부터 단절되게 합니다. 끊임없는 정보 유입은 압도적일 수 있으며, 디지털 디톡스에 대한 갈망으로 이어집니다.",
+                trendsTitle: "스크린 시간 감소 트렌드.",
+                trendsText: "의도적인 스크린 시간 감소를 향한 움직임이 커지고 있습니다. '바보폰'의 부활부터 디지털 웰빙 앱과 마음챙김 기술 커뮤니티의 성장까지, 사람들은 자신의 주의와 시간을 되찾기 위해 적극적으로 노력하고 있습니다.",
+                trend1Icon: "📱",
+                trend1Text: "디지털 디톡스 앱",
+                trend1Stat: "사용자의 70%가 스크린 시간 감소를 보고합니다.",
+                trend2Icon: "📵",
+                trend2Text: "'바보폰'의 부상",
+                trend2Stat: "전년 대비 판매량 45% 증가.",
+                trend3Icon: "🧘",
+                trend3Text: "마음챙김 기술 커뮤니티",
+                trend3Stat: "회원 수 60% 성장.",
+                problemTitle: "디지털 소음, 무의미.",
+                problemIntro: "우리는 디지털 생활의 핵심적인 긴장감을 파악했습니다. 아래 카드를 클릭하여 우리가 해결하려는 문제를 살펴보세요.",
+                card1Title: "끝없는 스크롤링",
+                card1Text: "Z세대는 중독을 위해 설계된 끝없는 텅 빈 피드에 압도되어 만족감을 느끼지 못합니다.",
+                card2Title: "피상적인 연결",
+                card2Text: "소셜 미디어는 진정한 연결을 구축하기보다 감시를 위한 공연처럼 느껴지는 경우가 많습니다.",
+                card3Title: "그룹 채팅의 보물: 소중한 순간들",
+                card3Text: "그룹 채팅은 진정한 재미가 일어나는 곳입니다: 내부 농담, 즉흥적인 업데이트, 함께 웃는 순간들. 하지만 이 황금 같은 순간들은 덧없이 사라집니다. 우리의 서비스는 이러한 즐거운 경험을 포착하여 기억에 남고 즐거운 특집 기사로 승화시켜, 스크롤을 넘어선 재미가 계속되도록 돕습니다.",
+                problemConclusion: "디지털은 잠시 멈추고 싶지만, 관계는 끊고 싶지 않은 당신에게.",
+                solutionTitle: "일상 의식, 재해석.",
+                solutionIntro: "우리의 솔루션은 디지털 생활과 실질적인 연결 사이의 간극을 메웁니다. 당신과 당신의 그룹을 위해 맞춤 제작된 AI 큐레이션 일간 인쇄 신문입니다. 토글을 사용하여 디지털 경험을 어떻게 변화시키는지 확인하세요.",
+                digitalLabel: "디지털 혼돈",
+                printLabel: "인쇄 의식",
+                digital1Title: "잃어버린 순간들",
+                digital1Text: "중요한 업데이트와 재미있는 추억은 끝없는 스크롤 속에서 사라집니다.",
+                digital2Title: "스팸성 광고",
+                digital2Text: "침입적인 광고는 대화를 방해하고 침해적인 스팸처럼 느껴집니다.",
+                digital3Title: "수동적인 소비",
+                digital3Text: "무의미한 스크롤링은 디지털 피로와 공허함을 초래합니다.",
+                digital4Title: "덧없는 콘텐츠",
+                digital4Text: "밈과 메시지는 한 번 보고 영원히 잊혀집니다.",
+                print1Title: "인쇄된 칼럼",
+                print1Text: "그룹 채팅 가십, 생활 업데이트, 밈은 기억에 남는 특집 기사로 바뀝니다.",
+                print2Title: "의도적인 제안",
+                print2Text: "쿠폰은 스팸이 아니라, 당신이 관심 있는 이야기 옆에 인쇄될 때 선물처럼 느껴집니다.",
+                print3Title: "공유된 경험",
+                print3Text: "그룹의 모든 사람이 같은 호를 받아 공유된 일상 의식을 만듭니다.",
+                print4Title: "실물 기념품",
+                print4Text: "사람들은 실물 물건을 보관합니다: 핀으로 고정하고, 공유하고, 기억합니다.",
+                experienceTitle: "당신의 편집장, 조를 만나세요.",
+                experienceIntro: "당신의 신문 뒤에는 조셉 T. 스테인이라는 마법 같은 존재가 있습니다. 냉소적이고 예리하며, 때로는 약간 참견하기 좋아하는 AI 편집장 조가 당신 그룹의 혼란을 매력적인 기사로 변모시킵니다.",
+                howJoeWorksTitle: "조가 일하는 방식",
+                howJoeWorksText: "조에게 DM으로 고민을 털어놓거나, 이야기를 요청하거나, 가십을 제보할 수 있습니다. 그를 그룹 채팅에 초대하면, 그는 조용히 당신들의 일상을 관찰하며 숨겨진 보석 같은 순간들을 찾아낼 것입니다. 그는 당신 그룹의 미완성된 역사를 기록하는 유령 작가입니다.",
+                joeQuote: "\"마치 그룹 채팅에 퓰리처상 수상 경력의 유령 작가가 생긴 것과 같죠.\"",
+                sampleColumnsTitle: "샘플 칼럼",
+                column1: "- \"편집장의 책상에서\" (조가 당신의 한 주를 평가)",
+                column2: "- \"주말 리뷰\" (당신 그룹의 모험 요약)",
+                column3: "- \"친구 운세\" (그룹 역학에 기반한 예측)",
+                column4: "- \"분류 광고: 분실, 습득, 놓친 인연\"",
+                column5: "- \"말했어야 할 것\" (과거 논쟁에 대한 반박)",
+                visionTitle: "왜 지금인가? 실체로의 회귀.",
+                visionIntro: "우리는 지금 문화적 전환점에 서 있습니다. 디지털에서 벗어나 의미 있는 물리적 경험으로 돌아가려는 흐름이 강해지고 있죠. 이것은 단순한 뉴스가 아닙니다. 바로 '존재감'에 대한 이야기입니다.",
+                vinylTitle: "바이닐이 돌아왔습니다",
+                vinylText: "바이닐 판매는 10년 이상 두 자릿수 성장을 기록하며 물리적 미디어에 대한 갈망을 증명하고 있습니다.",
+                bookTitle: "책은 사라지지 않았습니다",
+                bookText: "대부분의 독자들은 여전히 전자책보다 물리적인 책을 선호합니다.",
+                paperTitle: "신문이 다음입니다",
+                paperText: "우리는 대중을 위한 매체가 아닌, 당신을 위한 개인 매체로서 신문의 새로운 시대를 열고 있습니다.",
+                communityTitle: "실제 세상 연결의 부상.",
+                communityText1: "디지털 피로가 증가하는 가운데, 새로운 기술들이 역설적으로 더 전통적이고 물리적인 형태의 연결로의 회귀를 가능하게 하고 있습니다. 진정한 공동체와 물리적 상호작용을 향한 이러한 사회적 변화는 분명합니다.",
+                datingAppsTitle: "데이트 앱의 쇠퇴",
+                datingAppsText: "많은 사용자들이 끝없는 스와이프와 피상적인 상호작용에 지쳐있다고 보고하며, 새로운 이벤트 발견 플랫폼을 통해 직접 사람들을 만나는 것에 대한 관심이 다시 높아지고 있습니다.",
+                thirdPlacesTitle: "'제3의 공간'의 매력",
+                thirdPlacesText: "커피숍, 커뮤니티 센터, 지역 허브는 집과 직장 밖에서 캐주얼하고 진정한 사회적 상호작용을 위한 환경을 찾는 사람들이 늘면서 번성하고 있으며, 이는 종종 하이퍼로컬 소셜 앱을 통해 발견됩니다.",
+                communityText2: "프린트 리추얼은 더 실질적이고 공유된 경험에 대한 이러한 욕구와 완벽하게 일치하며, 스마트한 큐레이션을 통해 가장 가까운 서클 내에서 의식과 소속감을 조성합니다.",
+                quote1: "\"스크롤링은 줄이고. 페이지 넘기기는 늘리고.\"",
+                quote2: "\"화면은 줄이고. 이야기는 늘리고.\"",
+                quote3: "\"피드는 줄이고. 의미는 늘리고.\"",
+                footerText: "&copy; 2025 인쇄 의식 - 일상 독서를 재정의합니다."
+            }
+        };
+
+        let currentLang = localStorage.getItem('lang') || 'en';
+        let isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+        function applyDarkMode(enable) {
+            document.body.classList.toggle('dark-mode', enable);
+            document.getElementById('modeLight').classList.toggle('text-[#A58D78]', !enable);
+            document.getElementById('modeLight').classList.toggle('text-gray-400', enable);
+            document.getElementById('modeDark').classList.toggle('text-[#A58D78]', enable);
+            document.getElementById('modeDark').classList.toggle('text-gray-400', !enable);
+        }
+
+        function updateContent(lang) {
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[lang][key]) {
+                    element.innerHTML = translations[lang][key];
+                }
+            });
+
+            // Update language toggle labels
+            document.getElementById('langEn').classList.toggle('text-[#A58D78]', lang === 'en');
+            document.getElementById('langEn').classList.toggle('text-gray-400', lang !== 'en');
+            document.getElementById('langKo').classList.toggle('text-[#A58D78]', lang === 'ko');
+            document.getElementById('langKo').classList.toggle('text-gray-400', lang !== 'ko');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Apply initial language and dark mode settings
+            updateContent(currentLang);
+            if (currentLang === 'ko') {
+                document.getElementById('langToggle').checked = true;
+            }
+            applyDarkMode(isDarkMode);
+            if (isDarkMode) {
+                document.getElementById('darkModeToggle').checked = true;
+            }
+
+            // Removed problemCards click logic as per user request
+            // const problemCards = [
+            //     document.getElementById('problemCard1'),
+            //     document.getElementById('problemCard2'),
+            //     document.getElementById('problemCard3'),
+            // ];
+            // problemCards.forEach((card, index) => {
+            //     const text = document.getElementById(`problemText${index + 1}`);
+            //     card.addEventListener('click', () => {
+            //         text.classList.toggle('hidden');
+            //     });
+            // });
+
+            const experienceToggle = document.getElementById('experienceToggle');
+            const digitalView = document.getElementById('digitalView');
+            const printView = document.getElementById('printView');
+            const digitalLabel = document.getElementById('digitalLabel');
+            const printLabel = document.getElementById('printLabel');
+
+            experienceToggle.addEventListener('change', () => {
+                if (experienceToggle.checked) {
+                    digitalView.classList.add('hidden');
+                    printView.classList.remove('hidden');
+                    digitalLabel.classList.remove('text-[#A58D78]');
+                    digitalLabel.classList.add('text-gray-400');
+                    printLabel.classList.add('text-[#A58D78]');
+                    printLabel.classList.remove('text-gray-400');
+                } else {
+                    digitalView.classList.remove('hidden');
+                    printView.classList.add('hidden');
+                    digitalLabel.classList.add('text-[#A58D78]');
+                    digitalLabel.classList.remove('text-gray-400');
+                    printLabel.classList.remove('text-[#A58D78]');
+                    printLabel.classList.add('text-gray-400');
+                }
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.section');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelector(link.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Language toggle logic
+            const langToggle = document.getElementById('langToggle');
+            langToggle.addEventListener('change', () => {
+                currentLang = langToggle.checked ? 'ko' : 'en';
+                localStorage.setItem('lang', currentLang);
+                updateContent(currentLang);
+            });
+
+            // Dark Mode toggle logic
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            darkModeToggle.addEventListener('change', () => {
+                isDarkMode = darkModeToggle.checked;
+                localStorage.setItem('darkMode', isDarkMode);
+                applyDarkMode(isDarkMode);
+            });
+        });
+    </script>
+</body>
+</html>
